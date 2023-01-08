@@ -1,210 +1,293 @@
 import streamlit as st
-import pandas as pd  
+import pandas as pd
 import numpy as np
-import matplotlib.pyplot as pltpip 
-import seaborn as sns
-from plotly import graph_objs as go
-import warnings
-warnings.filterwarnings('ignore')
-
-# interactive visualization
+import hydralit_components as hc
+import altair as alt
 import plotly.express as px
 
-cnf, dth, rec, act = '#393e46', '#ff2e63', '#21bf73', '#fe9801' 
-
-df = pd.read_csv("D:\KULIAH\Kasus Covid 19 IDN 2021.csv", parse_dates=['Tanggal'])
-#Data Cleaning
-df_cleaned = df.dropna(axis=1)
-df_cleaned_out = df_cleaned.loc[df["Wilayah"] != "Indonesia" ]
-
-# st.header('This is a header')
-# st.markdown('Streamlit is **_really_ cool**.')
-
-options = st.sidebar.radio('Menu', options=['Tren Covid 19', 'Peta Persebaran Covid 19', 'Data Header', 'Data Statistics'])
 
 
+st.set_page_config(
+    page_title="Visualisasi Data Kepadatan Penduduk Jawa Timur",
+    page_icon="🔥",
+    layout="wide",
+    initial_sidebar_state='collapsed',
+)
+# -----------------------------------------------------------------------------------------------------------------------------------
+st.set_option('deprecation.showPyplotGlobalUse', False)
+menu_data = [
+    {'icon': "fa fa-database", 'label':"Dataset"},
+    {'id':'Data Filter','icon':'fa fa-database','label':"Data"},
+    {'id':'subid12','icon': "📈", 'label':"Line Chart"},
+    {'id':'subid11','icon': "📊", 'label':"Barchart"},
+    # {'id':'subid13','icon': "💹", 'label':"Area Chart"},
+    {'id':'Pie','icon': "◔", 'label':"Pie"},
+    {'id':'plot','icon': "〰️", 'label':"Plot chart"},
+    {'id':'hst','icon': "far fa-copy", 'label':"Histogram"},
+    {'id':'map','icon': "🗺", 'label':"Map"},
+    ]
+over_theme = {'txc_inactive': 'black','menu_background':'lightblue','txc_active':'yellow','option_active':'black'}
+menu_id = hc.nav_bar(
+    menu_definition=menu_data,
+    override_theme=over_theme,
+    home_name='Home',
+    login_name='Logout',
+    hide_streamlit_markers=True, 
+    sticky_nav=True,
+    sticky_mode='pinned', 
+)
+# -----------------------------------------------------------------------------------------------------------------------------------
+df = pd.read_excel(
+    io="Kepadatan Penduduk Jawa Timur.xlsx",
+    engine='openpyxl',
+)
+# -----------------------------------------------------------------------------------------------------------------------------------
+df.index = df.index + 1
+df['jumlah_penduduk_per_m2'] = df['jumlah_penduduk_per_m2'].astype(int)
+df['Semester'] = df['Semester'].astype(str)
+df['periode_update'] = df['periode_update'].astype(int)
+df.replace('-', np.nan, inplace=True)
+x = df.rename(columns={'Kabupaten_kota':'Kabupaten/Kota','jumlah_penduduk_per_m2':'Jumlah Penduduk','Semester':'Periode','periode_update':'Update'})
+# -----------------------------------------------------------------------------------------------------------------------------------
+st.markdown("""
+<style>
+div[data-testid="metric-container"] {
+   background-color: rgba(20, 205, 200, 1);
+   border: 1px solid rgba(242, 39, 19, 1);
+   padding: 5% 5% 5% 10%;
+   border-radius: 5px;
+   color: rgb(224,255,255);
+   overflow-wrap: break-word;
+}
 
-def stats(dataframe):
-    st.title('Data Statistics')
-    #Before Data Cleaning
-    st.header('Before Data Cleaning')
-    st.write(df.shape)
-    st.write(dataframe.describe())
-    st.markdown("Jumlah Data yang NULL")
-    st.write(df.isnull().sum())
+/* breakline for metric text         */
+div[data-testid="metric-container"] > label[data-testid="stMetricLabel"] > div {
+   overflow-wrap: break-word;
+   white-space: break-spaces;
+   font-size: large;
+   font
+   color: red;
+}
+</style>
+"""
+, unsafe_allow_html=True)
+# -----------------------------------------------------------------------------------------------------------------------------------
+if menu_id == 'Home':
+    st.write("""# Tugas UAS""")
+    st.write("""## Visualisasi Data Kepadatan Penduduk Jawa Timur dengan Streamlit""")
+    st.write("""## Anggota Kelompok :""")
+    a1,a2,a3 = st.columns(3)
+    a1.metric("M.Khotibul Umam", "NIM : 09020620031")
+    a2.metric("Muhammad Al Fatih", "NIM : 09020620034")
+    a3.metric("Retno Dwi Rahmawati", "NIM : 09040620065")
+# -----------------------------------------------------------------------------------------------------------------------------------
+if menu_id == 'Dataset':
+    st.write("""## Dataset Keseluruhan""") 
+    st.write(x.shape)
+    st.dataframe(x, width=1500)
+# -----------------------------------------------------------------------------------------------------------------------------------
+elif menu_id == 'Data Filter':
+    st.write("""## Filtering Berdasarkan Kabupaten/Kota""") 
+    X2018,X2019,X2020,X2021,X2022 = st.columns(5)
+    a= x.query("Update == 2018")
+    b= x.query("Update == 2019")
+    c= x.query("Update == 2020")
+    d= x.query("Update == 2021")
+    e= x.query("Update == 2022")
 
-    #After Data Cleaning
-    st.header('After Data Cleaning')
-    st.write(df_cleaned.shape)
-    st.write(df_cleaned.describe())
-    st.markdown("Jumlah Data yang NULL")
-    st.write(df_cleaned.isnull().sum())
-
-def data_header(dataframe):
-    st.title('Data Header')
-    #Before Data Cleaning
-    st.header('Before Data Cleaning')
-    st.write(df.shape)
-    st.dataframe(df)
-
-    #After Data Cleaning
-    st.header('After Data Cleaning')
-    st.write(df_cleaned.shape)
-    st.dataframe(df_cleaned)
-
-def plot(dataframe):
-    # --- Header ---
-    st.header(":bar_chart: Indonesia Covid-19 Dashboard")
+    X2018.metric("2018", a['Jumlah Penduduk'].sum())
+    X2019.metric("2019", b['Jumlah Penduduk'].sum())
+    X2020.metric("2020", c['Jumlah Penduduk'].sum())
+    X2021.metric("2021", d['Jumlah Penduduk'].sum())
+    X2022.metric("2022", e['Jumlah Penduduk'].sum())
     st.markdown("----")
-
-    # --- Information of total Several Data ---
-    total_case, total_recovered, total_death = st.columns(3)
-
-    total_case.metric("Total Kasus Baru", df_cleaned_out['Kasus Baru'].sum())
-    total_recovered.metric("Total Sembuh",  df_cleaned_out['Sembuh'].sum())
-    total_death.metric("Total Kematian",  df_cleaned_out['Kematian'].sum())
-
-    st.markdown("----")
-
-    # ///////
-
-    temp = df_cleaned_out[['Tanggal', 'Kasus Baru', 'Kematian', 'Sembuh']]
-    temp = temp.melt(id_vars='Tanggal', value_vars=['Kasus Baru', 'Kematian', 'Sembuh'])
-    fig = px.treemap(temp, path=["variable"], values="value", height=250,
-                 color_discrete_sequence=[dth, rec, cnf])
-    fig.data[0].textinfo = 'label+text+value'
-    # fig.update_layout(title_text='Rekap COVID 19 Indonesia 2020-2022', title_x=0.5)
+    st.write("""## Filter data berdasarkan Kabupaten/Kota""") 
+    ag = x['kabupaten_kota'].unique()
+    data = st.selectbox(
+        "Pilih Kabupaten/Kota", ag
+        )
+    daerah = x.query(
+        "kabupaten_kota == @data"
+        )
+    st.dataframe(daerah.style.format(precision=2), width=1500)
+# -----------------------------------------------------------------------------------------------------------------------------------
+elif menu_id == 'subid11':
+    st.write("""## Bar Charts""") 
+    ag = x['kabupaten_kota'].unique()
+    data = st.selectbox(
+        "Pilih Kabupaten/Kota", ag
+        )
+    daerah = x.query(
+        "kabupaten_kota == @data"
+        )
+    alt.Chart(daerah).mark_bar().encode(
+    x="Update:N",
+    y="sum(Jumlah Penduduk)",
+    color="kabupaten_kota:N",
+    row='Periode:N',
+    ).properties(height=300),
+# -----------------------------------------------------------------------------------------------------------------------------------
+elif menu_id == 'subid12':
+    st.write("""## Line Charts""") 
+    alt.Chart(x).mark_line().encode(
+    x="kabupaten_kota:N",
+    y="Jumlah Penduduk",
+    color="Update:N",
+    row='Periode:N',
+    ).properties(height=300),
+# -----------------------------------------------------------------------------------------------------------------------------------
+# elif menu_id == 'subid13':
+#     st.write("""## Area Charts""") 
+#     alt.Chart(df).mark_area(opacity=0.3).encode(
+#     x="kabupaten_kota",
+#     y=alt.Y("count(Jumlah penduduk):Q", stack=None),
+#     color="Update:N",
+#     ).properties(height=300),
+# -----------------------------------------------------------------------------------------------------------------------------------
+elif menu_id == 'map':
+    st.write("""## Map""") 
+    m = pd.read_csv('jatim2.csv')
+    mm = pd.read_excel(
+        io="Kepadatan Penduduk Jawa Timur2.xlsx")
+    ms = m.join(mm)
+    mp = ms.query(
+        "parent_nid == 15"
+    )
+    mp.rename(columns={'name':'Kabupaten/Kota'}, inplace=True)
+    fig = px.scatter_mapbox(mp, lat="latitude", lon="longitude", color="Kabupaten/Kota", hover_data=[ "jumlah penduduk", "periode update"], width=1100, size_max=3)
+    fig.update_layout(mapbox_style="open-street-map")
+    fig.update_layout(height=600, margin={"r":2,"t":2,"l":2,"b":2}, mapbox_zoom=8, mapbox_center = {"lat": -7.536064, "lon": 112.238403})
     st.plotly_chart(fig)
-
-    # ///////
-    st.header("Tren Lonjakan COVID 19 di Indonesia")
-    st.write('Pilih Jenis Data:')
-    option_1 = st.checkbox('Kasus Harian')
-    option_2 = st.checkbox('Sembuh Harian')
-    option_3 = st.checkbox('Meninggal Harian')
-
-    fig_main = go.Figure()
-    if (option_1 or option_2 or option_3) is False:
-        fig_main.add_trace(go.Scatter(x=df['Tanggal'], y=df['Kasus Baru'], name='Kasus Harian'))
-        
-    else:
-        if option_1:
-             fig_main.add_trace(go.Scatter(x=df['Tanggal'], y=df['Kasus Baru'], name='Kasus Harian'))
-        
-        if option_2:
-             fig_main.add_trace(go.Scatter(x=df['Tanggal'], y=df['Sembuh'], name='Sembuh Harian'))
-        
-        if option_3:
-             fig_main.add_trace(go.Scatter(x=df['Tanggal'], y=df['Kematian'], name='Meninggal Harian'))
     
-    fig_main.layout.update(title_text='Indonesia Covid-19', 
-        xaxis_rangeslider_visible=True, 
-        hovermode='x',
-        legend_orientation='v')
-
-    st.plotly_chart(fig_main, use_container_width=True)
-
-    # ///////
-    st.header("Tren Total COVID 19 di Indonesia")
-    st.write('Pilih Jenis Data:')
+    # df = gp.read_file('jatim.geojson')
+    # df = df.set_crs(epsg=3857, allow_override=True)
+    # df = df.to_crs(epsg=4326)
+    # df['lon'] = df.geometry  # extract longitude from geometry
+    # df['lat'] = df.geometry  # extract latitude from geometry
+    # df = df[['lon','lat']]     # only keep longitude and latitude
+    # st.write(df)        # show on table for testing only
+    # st.map(df)                 # show on map
+# -----------------------------------------------------------------------------------------------------------------------------------
+elif menu_id == 'Pie':
+    st.write("""## Pie""")
+    ag = x['kabupaten_kota'].unique()
+    data = st.selectbox(
+        "Pilih Kabupaten/Kota", ag
+        )
+    daerah = x.query(
+        "kabupaten_kota == @data"
+        )
+    alt.Chart(daerah).mark_arc().encode(
+        theta=alt.Theta(field="Jumlah Penduduk", type="quantitative"),
+        color=alt.Color(field="Update", type="nominal"),
+        column = alt.Row(field="Periode", type="nominal")
+    ).properties(width=500, height=500),
+# -----------------------------------------------------------------------------------------------------------------------------------
+elif menu_id == 'plot':
+    st.write("""## Plot chart Jumlah penduduk""")
+    alt.Chart(x).mark_circle().encode(
+    alt.X('kabupaten_kota', scale=alt.Scale(zero=False)),
+    alt.Y('Jumlah Penduduk', scale=alt.Scale(zero=False, padding=1)),
+    color=alt.Color(field="Update", type="nominal"),
+    size='Jumlah Penduduk',
+    ).properties(width=1000, height=300),
+# -----------------------------------------------------------------------------------------------------------------------------------
+elif menu_id == 'hst':
+    st.write("""## Histogram""")
+    alt.Chart(x).mark_bar().encode(
+    alt.X('kabupaten_kota'),
+    y='Jumlah Penduduk',
+    color='Update',
+    row='Periode'
+    ).properties(width=1000, height=300),
+# -----------------------------------------------------------------------------------------------------------------------------------
+if menu_id == 'Logout':
+    st.write("""# Sekian""")
+    st.write("""# Terima kasih """)
     
-    option_1 = st.checkbox('Total Kasus')
-    option_2 = st.checkbox('Total Sembuh')
-    option_3 = st.checkbox('Total Meninggal')
+#<<<------------------------------------------------ I S I ------------------------------------------------------>>>
 
-    fig_main = go.Figure()
-    if (option_1 or option_2 or option_3) is False:
-        fig_main.add_trace(go.Scatter(x=df['Tanggal'], y=df['Total Kasus Baru'], name='Total Kasus'))
-        
-    else:
-        if option_1:
-             fig_main.add_trace(go.Scatter(x=df['Tanggal'], y=df['Total Kasus Baru'], name='Total Kasus'))
-        
-        if option_2:
-             fig_main.add_trace(go.Scatter(x=df['Tanggal'], y=df['Total Sembuh'], name='Total Sembu'))
-        
-        if option_3:
-             fig_main.add_trace(go.Scatter(x=df['Tanggal'], y=df['Total Kematian'], name='Total Meninggal'))
+# df = pd.read_excel(
+#     io="Kepadatan Penduduk Jawa Timur.xlsx",
+#     skiprows=0,
+#     header=0,
+#     index_col=0,
+#     engine='openpyxl',
+# )
+
+# df['jumlah_penduduk_per_m2'] = df['jumlah_penduduk_per_m2'].astype(int)
+# df['Semester'] = df['Semester'].astype(str)
+# df['periode_update'] = df['periode_update'].astype(int)
+# df.replace('-', np.nan, inplace=True)
+# x = df.rename(columns={'jumlah_penduduk_per_m2':'Jumlah Penduduk','Semester':'Periode','periode_update':'Update'})
+
+# option = st.sidebar.selectbox(
+# 'Silakan pilih:',
+# ('Home','Data frame','Data Visualitation')
+# )
+# if option == 'Home' or option == '':
+#     st.write("# Tugas Ujian Akhir Semester") 
+#     st.write("""## Visualisasi Data Kepadatan Penduduk Jawa Timur dengan Streamlit""")
+#     st.write("""## kelompok : 6""")
+#     st.write(""" Nama : M.Khotibul Umam  NIM : 09020620031 """)
+#     st.write(""" Nama : Retno  NIM : 09020620032 """)
+#     st.write(""" Nama : Fateh  NIM : 09020620033 """)    
+
+# elif option == 'Data frame':
+#     with st.spinner('Wait for it...') :
+#         import time
+#     time.sleep(3)
+#     st.success('Berhasil !',icon="✅")
+#     st.snow()
+#     st.write("""## Data Frame""") 
+#     # x['periode_update'] = pd.to_datetime(df['periode_update'])
+#     # xx=df['jumlah_penduduk_per_m2'] = df['jumlah_penduduk_per_m2'].astype(int)
+#     st.dataframe(x)
+#     st.write("""## Filtering""") 
+#     ag = x.index.unique()
+#     data = st.selectbox(
+#     "Pilih Kabupaten/Kota", ag 
+#     )
+#     pilihan = x.query(
+
+#     "index == @data"
+#     )
+#     st.dataframe(pilihan.style.format(precision=2))
     
-    fig_main.layout.update(title_text='Indonesia Covid-19', 
-        xaxis_rangeslider_visible=True, 
-        hovermode='x',
-        legend_orientation='v')
+# elif option == 'Data Visualitation':
+#     ag = x.index.unique()
+#     data = st.selectbox(
+#         "Pilih Kabupaten/Kota", ag
+#         )
+#     pilihan = x.query(
 
-    st.plotly_chart(fig_main, use_container_width=True)
-    list = df_cleaned_out['Wilayah'].unique()
-    wilayah4 = st.selectbox("Pilih Wilayah:", list)
-
-    temp = df_cleaned_out[df_cleaned_out['Wilayah']==wilayah4].groupby('Tanggal')['Kasus Baru', 'Kematian', 'Sembuh'].sum().reset_index()
-    temp = temp.melt(id_vars="Tanggal", value_vars=['Kasus Baru', 'Kematian', 'Sembuh'],
-                 var_name='Case', value_name='Count')
-    temp.head()
-
-    fig = px.area(temp, x="Tanggal", y="Count", color='Case', height=600, width=700,
-             title=wilayah4, color_discrete_sequence = [dth,  cnf, rec, act])
-    fig.update_layout(xaxis_rangeslider_visible=True)
-    st.plotly_chart(fig)
-    # ///////
-    st.header("Tren Lonjakan Kasus Baru per Wilayah")
-    list = df_cleaned_out['Wilayah'].unique()
-    wilayah = st.selectbox("Pilih Wilayah Total Kasus:", list)
-
-    fig = px.line(df[df['Wilayah'] == wilayah], 
-    x = "Tanggal",y = "Kasus Baru", title = wilayah, color_discrete_sequence=[dth])
-    st.plotly_chart(fig)
-
-    # ///////
-    st.header("Tren Lonjakan Kasus Sembuh per Wilayah")
-    wilayah2 = st.selectbox("Pilih Wilayah Sembuh:", list)
-
-    fig = px.line(df[df['Wilayah'] == wilayah2], 
-    x = "Tanggal",y = "Sembuh", title = wilayah2, color_discrete_sequence=[rec])
-    st.plotly_chart(fig)
-
-    # ///////
-    st.header("Tren Lonjakan Meninggal per Wilayah")
-    wilayah3 = st.selectbox("Pilih Wilayah Total Meninggal:", list)
-
-    fig = px.line(df[df['Wilayah'] == wilayah3], 
-    x = "Tanggal",y = "Kematian", title = wilayah3, color_discrete_sequence=[cnf])
-    st.plotly_chart(fig)
-
-def mapping(dataframe):
-    # --- Header ---
-    st.header("Peta Persebaran Kasus Covid-19 di Indonesia")    
-    fig = px.scatter_mapbox(df_cleaned, lat="Garis Lintang (lat)", lon="Garis Bujur (lot)", color="Total Kematian", size="Total Kematian",
-                        mapbox_style="open-street-map", zoom = 0.5, color_continuous_scale = 'Plasma')
-    st.plotly_chart(fig)
-
-    st.header("Laju Persebaran Kasus Covid-19 di Indonesia")
-    df_cleaned_out['Bulan']=df_cleaned_out['Tanggal'].dt.month
-    df_cleaned_out['Tahun']=df_cleaned_out['Tanggal'].dt.year
+#         "index == @data"
+#         )
     
-    fig = px.scatter_mapbox(df_cleaned_out, lat="Garis Lintang (lat)", lon="Garis Bujur (lot)", animation_group = 'Wilayah', color="Total Kasus Baru", size="Total Kasus Baru",
-                        mapbox_style="open-street-map", zoom = 0.5, color_continuous_scale = 'Plasma', animation_frame = 'Tahun')
-    st.plotly_chart(fig)
-
-    st.header("Laju Persebaran Covid-19 di Indonesia")
-    df_cleaned_out['Tanggal'] = pd.to_datetime(df['Tanggal'], format = '%x')
-    df_cleaned_out['Tanggal'] = df['Tanggal'].apply(str)
-    
-    fig = px.scatter_mapbox(df_cleaned_out, lat="Garis Lintang (lat)", lon="Garis Bujur (lot)", animation_group = 'Wilayah', color="Total Kasus Baru", 
-                        mapbox_style="open-street-map", zoom = 0.5, color_continuous_scale = 'Plasma', animation_frame = 'Tanggal')
-    st.plotly_chart(fig)
-
-if options == 'Data Header':
-    data_header(df)
-elif options == 'Data Statistics':
-    stats(df)
-elif options == 'Tren Covid 19':
-    plot(df)
-elif options == 'Peta Persebaran Covid 19':
-    mapping(df)
-
-# temp = df[['Tanggal', 'positif', 'sembuh', 'meninggal']]
-# temp = temp.melt(id_vars='Tanggal', value_vars=['positif', 'sembuh', 'meninggal'])
-# fig = px.treemap(temp, path=["variable"], values="value", height=224, 
-#                  color_discrete_sequence=[act, rec, dth])
-# fig.data[0].textinfo = 'label+text+value'
-# fig.update_layout(title_text='Rekap COVID 19 DKI Jakarta Bulan November 2020', title_x=0.5)
-# fig.show()
+#     f = ['1','2','3','4','5']
+#     v = st.selectbox(
+#         'pilih Visualisasi', f
+#     )
+#     if v == '1':
+#         st.success('Berhasil Memilih Data!', icon="✅")
+#         st.write("""## Bar Charts""") 
+#         vc = pilihan.groupby('Update')['Jumlah Penduduk','Periode'].sum()
+#         st.bar_chart(vc.style.format(precision=0))
+#     elif v == '2':
+#         st.success('Berhasil Memilih Data!', icon="✅")
+#         st.write("""## Line Charts""") 
+#         vc = pilihan.groupby('Update')['Jumlah Penduduk','Periode'].sum()
+#         st.line_chart(vc.style.format(precision=0))
+#     elif v == '3':
+#         st.success('Berhasil Memilih Data!', icon="✅")
+#         st.write("""## Area Charts""") 
+#         vc = pilihan.groupby('Update')['Jumlah Penduduk','Periode'].sum()
+#         st.area_chart(vc.style.format(precision=0))
+#     elif v == '4':
+#         st.success('Berhasil Memilih Data!', icon="✅")
+#         st.write("""## Map""")
+#         st.map(pilihan)        
+#         st.write("""## Sek Bingung""")
+#     elif v == '5':
+#         st.success('Berhasil Memilih Data!', icon="✅")
+#         st.write("""## Domongi sek bingung kok e""") 
