@@ -152,8 +152,8 @@ elif menu_id == 'map':
     mm = pd.read_excel(io="Kepadatan Penduduk Jawa Timur.xlsx")
     ms = m.join(mm)
     mp = ms.query("parent_nid == 15")
-    mp.drop(columns=['kabupaten_kota'], inplace=True)  # Drop 'kabupaten_kota' column
-    mp.rename(columns={'jumlah_penduduk_per_m2': 'jumlah penduduk', 'periode_update': 'periode update'}, inplace=True)  # Rename columns
+#    mp.drop(columns=['kabupaten_kota'], inplace=True)  # Drop 'kabupaten_kota' column
+    mp.rename(columns={'jumlah_penduduk_per_m2': 'jumlah penduduk','name':'Kabupaten/Kota', 'periode_update': 'periode update'}, inplace=True)  # Rename columns
     mp['periode update'] = mp['periode update'].astype(int)  # Convert 'periode update' to integer
 
     # Debugging
