@@ -155,10 +155,6 @@ elif menu_id == 'map':
     mp.drop(columns=['kabupaten_kota'], inplace=True)  # Drop 'kabupaten_kota' column
     mp.rename(columns={'jumlah_penduduk_per_m2': 'jumlah penduduk','name':'Kabupaten/Kota', 'periode_update': 'periode update'}, inplace=True)  # Rename columns
     mp['periode update'] = mp['periode update'].astype(int)  # Convert 'periode update' to integer
-
-    # Debugging
-    st.write(mp.head())  # Display the first few rows of the DataFrame
-    st.write(mp.info())  # Display DataFrame information
     
     fig = px.scatter_mapbox(mp, lat="latitude", lon="longitude", color="Kabupaten/Kota", hover_data=[ "jumlah penduduk", "periode update"], size="jumlah penduduk", width=1100, size_max=50)
     fig.update_layout(mapbox_style="open-street-map")
