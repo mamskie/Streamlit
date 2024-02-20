@@ -140,14 +140,21 @@ elif menu_id == 'subid12':
 # -----------------------------------------------------------------------------------------------------------------------------------
 elif menu_id == 'map':
     st.write("""## Map""") 
+#    m = pd.read_csv('jatim2.csv')
+#    mm = pd.read_excel(
+#        io="Kepadatan Penduduk Jawa Timur.xlsx")
+#    ms = m.join(mm)
+#    mp = ms.query(
+#        "parent_nid == 15"
+#    )
+#    mp.rename(columns={'name':'Kabupaten/Kota'}, inplace=True)
     m = pd.read_csv('jatim2.csv')
-    mm = pd.read_excel(
-        io="Kepadatan Penduduk Jawa Timur.xlsx")
+    mm = pd.read_excel(io="Kepadatan Penduduk Jawa Timur.xlsx")
     ms = m.join(mm)
-    mp = ms.query(
-        "parent_nid == 15"
-    )
-    mp.rename(columns={'name':'Kabupaten/Kota'}, inplace=True)
+    mp = ms.query("parent_nid == 15")
+    mp.drop(columns=['kabupaten_kota'], inplace=True)  # Drop 'kabupaten_kota' column
+    mp.rename(columns={'jumlah_penduduk_per_m2': 'jumlah penduduk', 'periode_update': 'periode update'}, inplace=True)  # Rename columns
+    mp['periode update'] = mp['periode update'].astype(int)  # Convert 'periode update' to integer
 
     # Debugging
     st.write(mp.head())  # Display the first few rows of the DataFrame
