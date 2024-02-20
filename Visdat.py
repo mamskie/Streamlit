@@ -5,7 +5,16 @@ import hydralit_components as hc
 import altair as alt
 import plotly.express as px
 
-
+st.markdown(
+    """
+    <style>
+    .streamlit-navbar {
+        width: 100%;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 st.set_page_config(
     page_title="Visualisasi Data Kepadatan Penduduk Jawa Timur",
