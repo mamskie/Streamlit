@@ -9,7 +9,7 @@ import plotly.express as px
 
 st.set_page_config(
     page_title="Visualisasi Data Kepadatan Penduduk Jawa Timur",
-    page_icon="🔥",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state='collapsed',
 )
@@ -73,13 +73,13 @@ div[data-testid="metric-container"] > label[data-testid="stMetricLabel"] > div {
 , unsafe_allow_html=True)
 # -----------------------------------------------------------------------------------------------------------------------------------
 if menu_id == 'Home':
-    st.write("""# Tugas UAS""")
-    st.write("""## Visualisasi Data Kepadatan Penduduk Jawa Timur dengan Streamlit""")
-    st.write("""## Anggota Kelompok :""")
+    st.write("""# Visualisasi Data Kepadatan Penduduk Jawa Timur dengan Streamlit""")
+    st.write("""## Aplikasi ini dikembangkan untuk melakukan visualisasi data kepadatan penduduk di Jawa Timur menggunakan Streamlit, sebuah framework Python untuk membuat aplikasi web interaktif dengan mudah. Aplikasi ini memanfaatkan beberapa library tambahan seperti Pandas, NumPy, Hydralit Components, Altair, dan Plotly Express untuk analisis dan visualisasi data. """)
+    st.write("""## Catatan :""")
     a1,a2,a3 = st.columns(3)
-    a1.metric("M.Khotibul Umam", "NIM : 09020620031")
-    a2.metric("Muhammad Al Fatih", "NIM : 09020620034")
-    a3.metric("Retno Dwi Rahmawati", "NIM : 09040620065")
+    a1.metric("Aplikasi ini menggunakan Streamlit dan beberapa library visualisasi data untuk menyajikan informasi dengan cara yang lebih menarik dan mudah dipahami.")
+    a2.metric("Pastikan semua dependensi terinstall dengan benar")
+    a3.metric("Gunakan menu navigasi di bagian atas aplikasi untuk beralih antara berbagai tampilan dan fitur yang telah disediakan")
 # -----------------------------------------------------------------------------------------------------------------------------------
 if menu_id == 'Dataset':
     st.write("""## Dataset Keseluruhan""") 
