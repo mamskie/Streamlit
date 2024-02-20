@@ -142,7 +142,7 @@ elif menu_id == 'map':
     st.write("""## Map""") 
     m = pd.read_csv('jatim2.csv')
     mm = pd.read_excel(
-        io="Kepadatan Penduduk Jawa Timur2.xlsx")
+        io="Kepadatan Penduduk Jawa Timur.xlsx")
     ms = m.join(mm)
     mp = ms.query(
         "parent_nid == 15"
