@@ -4,3 +4,4 @@ numpy
 hydralit_components
 altair
 plotly
+openpyxl
