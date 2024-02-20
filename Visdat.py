@@ -160,7 +160,7 @@ elif menu_id == 'map':
     st.write(mp.head())  # Display the first few rows of the DataFrame
     st.write(mp.info())  # Display DataFrame information
     
-    fig = px.scatter_mapbox(mp, lat="latitude", lon="longitude", color="Kabupaten/Kota", hover_data=[ "jumlah penduduk", "periode update"], width=1100, size_max=3)
+    fig = px.scatter_mapbox(mp, lat="latitude", lon="longitude", color="Kabupaten/Kota", hover_data=[ "jumlah penduduk", "periode update"], size="jumlah penduduk", width=1100, size_max=20)
     fig.update_layout(mapbox_style="open-street-map")
     fig.update_layout(height=600, margin={"r":2,"t":2,"l":2,"b":2}, mapbox_zoom=8, mapbox_center = {"lat": -7.536064, "lon": 112.238403})
     st.plotly_chart(fig)
