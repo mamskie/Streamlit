@@ -34,6 +34,7 @@ menu_id = hc.nav_bar(
     hide_streamlit_markers=True, 
     sticky_nav=True,
     sticky_mode='pinned', 
+    css={"width": "100%"}
 )
 # -----------------------------------------------------------------------------------------------------------------------------------
 df = pd.read_excel(
