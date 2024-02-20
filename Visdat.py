@@ -74,12 +74,7 @@ div[data-testid="metric-container"] > label[data-testid="stMetricLabel"] > div {
 # -----------------------------------------------------------------------------------------------------------------------------------
 if menu_id == 'Home':
     st.write("""# Visualisasi Data Kepadatan Penduduk Jawa Timur dengan Streamlit""")
-    st.write("""## Aplikasi ini dikembangkan untuk melakukan visualisasi data kepadatan penduduk di Jawa Timur menggunakan Streamlit, sebuah framework Python untuk membuat aplikasi web interaktif dengan mudah. Aplikasi ini memanfaatkan beberapa library tambahan seperti Pandas, NumPy, Hydralit Components, Altair, dan Plotly Express untuk analisis dan visualisasi data. """)
-    st.write("""## Catatan :""")
-    a1,a2,a3 = st.columns(3)
-    a1.metric("Dataset","dataset dengan jumlah baris dan kolom")
-    a2.metric("Data Filter","Filter data berdasarkan tahun update dan Kabupaten/Kota")
-    a3.metric("Barchart","Diagram batang berdasarkan Kabupaten/Kota dan tahun update")
+    st.write("""# Aplikasi ini dikembangkan untuk melakukan visualisasi data kepadatan penduduk di Jawa Timur menggunakan Streamlit, sebuah framework Python untuk membuat aplikasi web interaktif dengan mudah. Aplikasi ini memanfaatkan beberapa library tambahan seperti Pandas, NumPy, Hydralit Components, Altair, dan Plotly Express untuk analisis dan visualisasi data. """)
 # -----------------------------------------------------------------------------------------------------------------------------------
 if menu_id == 'Dataset':
     st.write("""## Dataset Keseluruhan""") 
