@@ -33,8 +33,7 @@ menu_id = hc.nav_bar(
     login_name='Logout',
     hide_streamlit_markers=True, 
     sticky_nav=True,
-    sticky_mode='pinned', 
-    css={"width": "100%"}
+    sticky_mode='pinned',
 )
 # -----------------------------------------------------------------------------------------------------------------------------------
 df = pd.read_excel(
