@@ -1,7 +1,7 @@
-streamlit
-pandas
-numpy
-hydralit_components
-altair
-plotly
-openpyxl
+streamlit==1.23.1
+pandas==1.5.3
+numpy==1.23.5
+hydralit_components==1.0.8
+altair==4.2.0
+plotly==5.14.0
+openpyxl==3.1.2
